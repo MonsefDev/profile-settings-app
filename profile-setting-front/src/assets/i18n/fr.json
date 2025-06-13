@@ -1,0 +1,81 @@
+{
+  "menu": {
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "scopes": "Scopes",
+    "partners": "Partners"
+  },
+  "common": {
+    "create": "Créer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "refresh": "Actualiser",
+    "search": "Rechercher",
+    "actions": "Actions",
+    "required": "Ce champ est obligatoire",
+    "loading": "Chargement en cours...",
+    "success": "Opération réussie",
+    "error": "Une erreur s'est produite",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "no_data": "Aucune donnée disponible"
+  },
+  "profile": {
+    "title": "Gestion des Profils",
+    "create_title": "Créer un profil",
+    "edit_title": "Modifier le profil",
+    "code": "Code",
+    "description": "Description",
+    "scopes": "Scopes",
+    "created_at": "Date de création",
+    "updated_at": "Date de mise à jour",
+    "last_modified_by": "Dernière modification par",
+    "validation": {
+      "code_required": "Le code est obligatoire",
+      "code_length": "Le code doit contenir entre 5 et 10 caractères",
+      "code_format": "Le code ne peut contenir d'espaces ni les caractères \", #, !, &, _",
+      "code_not_only_numbers": "Le code ne peut contenir uniquement des chiffres",
+      "description_required": "La description est obligatoire",
+      "description_length": "La description doit contenir entre 10 et 30 caractères",
+      "scopes_required": "Au moins un scope doit être sélectionné"
+    }
+  },
+  "scopes": {
+    "title": "Gestion des Scopes",
+    "create_title": "Créer un scope",
+    "edit_title": "Modifier le scope",
+    "rank": "Rang",
+    "name": "Nom",
+    "description": "Description",
+    "comment": "Commentaire",
+    "condition": "Condition",
+    "validation": {
+      "rank_required": "Le rang est obligatoire",
+      "rank_range": "Le rang doit être entre 0 et 999",
+      "name_required": "Le nom est obligatoire",
+      "description_required": "La description est obligatoire"
+    }
+  },
+  "partners": {
+    "title": "Gestion des Partners",
+    "create_title": "Créer un partner",
+    "edit_title": "Modifier le partner",
+    "status": "Statut",
+    "hosting_type": "Type d'hébergement",
+    "alias": "Alias",
+    "queue_name": "Nom de la file",
+    "application": "Application",
+    "description": "Description",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "validation": {
+      "status_required": "Le statut est obligatoire",
+      "hosting_type_required": "Le type d'hébergement est obligatoire",
+      "alias_required": "L'alias est obligatoire",
+      "queue_name_required": "Le nom de la file est obligatoire",
+      "queue_name_unique": "Ce nom de file existe déjà",
+      "description_required": "La description est obligatoire"
+    }
+  }
+}

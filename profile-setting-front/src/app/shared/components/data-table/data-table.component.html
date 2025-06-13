@@ -1,0 +1,119 @@
+<div class="table-container">
+  <!-- Header avec boutons d'action -->
+  <div class="table-header">
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCreate.emit()"
+        [disabled]="isLoading">
+        <mat-icon>add</mat-icon>
+        {{ 'common.create' | translate }}
+      </button>
+
+      <button
+        mat-icon-button
+        (click)="onRefresh.emit()"
+        [disabled]="isLoading"
+        [matTooltip]="'common.refresh' | translate">
+        <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+      </button>
+    </div>
+
+    <!-- Zone de recherche -->
+    <mat-form-field *ngIf="searchable" appearance="outline" class="search-field">
+      <mat-label>{{ 'common.search' | translate }}</mat-label>
+      <input
+        matInput
+        [value]="searchTerm"
+        (input)="onSearchChange($event)"
+        [placeholder]="'common.search' | translate">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper" *ngIf="!isLoading">
+    <table
+      mat-table
+      [dataSource]="displayedData"
+      class="mat-elevation-4"
+      matSort>
+
+      <!-- Colonnes dynamiques -->
+      <ng-container
+        *ngFor="let column of columns; trackBy: trackByColumn"
+        [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.key : ''">
+          {{ column.label | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <ng-container [ngSwitch]="column.type">
+            <!-- Boolean -->
+            <mat-chip
+              *ngSwitchCase="'boolean'"
+              [color]="element[column.key] ? 'primary' : 'warn'"
+              class="status-chip">
+              {{ element[column.key] ? ('common.active' | translate) : ('common.inactive' | translate) }}
+            </mat-chip>
+
+            <!-- Date -->
+            <span *ngSwitchCase="'date'">
+              {{ element[column.key] | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+
+            <!-- Array (pour les scopes) -->
+            <div *ngSwitchCase="'array'" class="array-container">
+              <mat-chip
+                *ngFor="let item of element[column.key]; trackBy: trackByArrayItem"
+                class="scope-chip">
+                {{ item }}
+              </mat-chip>
+            </div>
+
+            <!-- Text par défaut avec surbrillance -->
+            <span
+              *ngSwitchDefault
+              [innerHTML]="highlightSearchTerm(element[column.key], searchTerm)">
+            </span>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <!-- Colonne d'actions -->
+      <ng-container matColumnDef="actions" *ngIf="actions.length > 0">
+        <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let element" class="actions-cell">
+          <button
+            *ngFor="let action of getVisibleActions(element); trackBy: trackByAction"
+            mat-icon-button
+            [color]="action.color || 'primary'"
+            (click)="action.action(element)"
+            [matTooltip]="action.label | translate">
+            <mat-icon>{{ action.icon }}</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Headers et lignes -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns;"
+        class="table-row">
+      </tr>
+    </table>
+
+    <!-- Message si aucune donnée -->
+    <div *ngIf="displayedData.length === 0" class="no-data">
+      <mat-icon>inbox</mat-icon>
+      <p>{{ 'common.no_data' | translate }}</p>
+    </div>
+  </div>
+</div>

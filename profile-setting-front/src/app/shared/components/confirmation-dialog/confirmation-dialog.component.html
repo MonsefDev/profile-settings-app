@@ -1,0 +1,19 @@
+<div class="confirmation-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon [color]="getIconColor()">{{ getIcon() }}</mat-icon>
+    {{ data.title | translate }}
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <p>{{ data.message | translate }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="onCancel()">
+      {{ (data.cancelText || 'common.cancel') | translate }}
+    </button>
+    <button mat-raised-button [color]="getButtonColor()" (click)="onConfirm()">
+      {{ (data.confirmText || 'common.confirm') | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

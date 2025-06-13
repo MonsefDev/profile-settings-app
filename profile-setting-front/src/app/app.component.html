@@ -1,0 +1,103 @@
+<!-- src/app/app.component.html -->
+<div class="app-container">
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Navigation Sidebar -->
+    <mat-sidenav
+      #drawer
+      class="sidenav"
+      fixedInViewport
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+
+      <mat-toolbar class="sidenav-header">
+        <span class="app-title">
+          <mat-icon>business</mat-icon>
+          CACIB Test
+        </span>
+      </mat-toolbar>
+
+      <mat-nav-list>
+        <!-- Profile -->
+        <a mat-list-item routerLink="/profile" routerLinkActive="active-route">
+          <mat-icon matListItemIcon>person</mat-icon>
+          <span matListItemTitle>{{ 'menu.profile' | translate }}</span>
+        </a>
+
+        <!-- Settings avec expansion -->
+        <mat-expansion-panel class="settings-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>settings</mat-icon>
+              <span class="panel-title">{{ 'menu.settings' | translate }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="settings-submenu">
+            <a mat-list-item routerLink="/settings/scopes" routerLinkActive="active-route">
+              <mat-icon matListItemIcon>tune</mat-icon>
+              <span matListItemTitle>{{ 'menu.scopes' | translate }}</span>
+            </a>
+
+            <a mat-list-item routerLink="/settings/partners" routerLinkActive="active-route">
+              <mat-icon matListItemIcon>group</mat-icon>
+              <span matListItemTitle>{{ 'menu.partners' | translate }}</span>
+            </a>
+          </div>
+        </mat-expansion-panel>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <!-- Contenu principal -->
+    <mat-sidenav-content>
+      <!-- Barre d'outils principale -->
+      <mat-toolbar color="primary" class="main-toolbar">
+        <button
+          type="button"
+          aria-label="Toggle sidenav"
+          mat-icon-button
+          (click)="drawer.toggle()"
+          *ngIf="isHandset$ | async">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <span class="toolbar-spacer"></span>
+
+        <!-- Sélecteur de langue -->
+        <button mat-icon-button [matMenuTriggerFor]="languageMenu" matTooltip="Langue">
+          <mat-icon>language</mat-icon>
+        </button>
+        <mat-menu #languageMenu="matMenu">
+          <button mat-menu-item (click)="changeLanguage('fr')">
+            <mat-icon>{{ currentLanguage === 'fr' ? 'check' : '' }}</mat-icon>
+            <span>Français</span>
+          </button>
+          <button mat-menu-item (click)="changeLanguage('en')">
+            <mat-icon>{{ currentLanguage === 'en' ? 'check' : '' }}</mat-icon>
+            <span>English</span>
+          </button>
+        </mat-menu>
+
+        <!-- Simulation utilisateur -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Utilisateur">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item (click)="simulateUserWithRank3(true)">
+            <mat-icon>{{ hasRank3Scope ? 'check' : '' }}</mat-icon>
+            <span>Avec scope rang 3</span>
+          </button>
+          <button mat-menu-item (click)="simulateUserWithRank3(false)">
+            <mat-icon>{{ !hasRank3Scope ? 'check' : '' }}</mat-icon>
+            <span>Sans scope rang 3</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+
+      <!-- Zone de contenu des pages -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

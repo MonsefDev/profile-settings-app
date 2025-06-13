@@ -1,0 +1,27 @@
+<p>partners works!</p>
+<div class="partners-container">
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'partners.title' | translate }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ partners.length }} partner(s) configuré(s)
+        <span *ngIf="hasRank3Scope" class="rank3-indicator">
+          (Utilisateur avec scope rang 3 - Auto ACTIVE)
+        </span>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <app-data-table
+        [data]="displayedPartners"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [isLoading]="isLoading"
+        [searchable]="false"
+        (onCreate)="openCreateDialog()"
+        (onRefresh)="loadPartners()"
+        (onSearch)="onSearch($event)">
+      </app-data-table>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,91 @@
+<!-- src/app/shared/components/scope-form/scope-form.component.html -->
+<h2 mat-dialog-title>
+  {{ (data.mode === 'create' ? 'scopes.create_title' : 'scopes.edit_title') | translate }}
+</h2>
+
+<form [formGroup]="scopeForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="form-content">
+    <!-- Rank -->
+    <app-rank-input
+      [label]="'scopes.rank' | translate"
+      [hint]="'Valeur entre 0 et 999 (auto-incrémenté: ' + data.nextAvailableRank + ')'"
+      formControlName="rank">
+    </app-rank-input>
+
+    <div class="error-container">
+      <mat-error *ngIf="scopeForm.get('rank')?.hasError('required')">
+        {{ 'scopes.validation.rank_required' | translate }}
+      </mat-error>
+      <mat-error *ngIf="scopeForm.get('rank')?.hasError('rankRange')">
+        {{ 'scopes.validation.rank_range' | translate }}
+      </mat-error>
+    </div>
+
+    <!-- Name -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'scopes.name' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Ex: USER_MANAGEMENT">
+      <mat-error *ngIf="scopeForm.get('name')?.hasError('required')">
+        {{ 'scopes.validation.name_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'scopes.description' | translate }}</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        placeholder="Description du scope">
+      </textarea>
+      <mat-error *ngIf="scopeForm.get('description')?.hasError('required')">
+        {{ 'scopes.validation.description_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Comment -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'scopes.comment' | translate }}</mat-label>
+      <textarea
+        matInput
+        formControlName="comment"
+        rows="2"
+        placeholder="Commentaire optionnel">
+      </textarea>
+    </mat-form-field>
+
+    <!-- Condition -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'scopes.condition' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="condition"
+        placeholder="Ex: hasRole('ADMIN')">
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="scopeForm.invalid || isSubmitting">
+      <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+      <span *ngIf="!isSubmitting">
+        {{ 'common.save' | translate }}
+      </span>
+    </button>
+  </mat-dialog-actions>
+</form>
+

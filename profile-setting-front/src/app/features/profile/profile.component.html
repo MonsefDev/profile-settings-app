@@ -1,0 +1,24 @@
+<!-- src/app/features/profile/profile.component.html -->
+<div class="profile-container">
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'profile.title' | translate }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ profiles.length }} profil(s) dans le système
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <app-data-table
+        [data]="profiles"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [isLoading]="isLoading"
+        [searchable]="true"
+        (onCreate)="openCreateDialog()"
+        (onRefresh)="loadProfiles()"
+        (onSearch)="onSearch($event)">
+      </app-data-table>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,131 @@
+<p>partner-form works!</p>
+<h2 mat-dialog-title>
+  {{ (data.mode === 'create' ? 'partners.create_title' : 'partners.edit_title') | translate }}
+</h2>
+
+<form [formGroup]="partnerForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="form-content">
+    <!-- Status -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.status' | translate }}</mat-label>
+      <mat-select
+        formControlName="status"
+        [disabled]="data.mode === 'edit'">
+        <mat-option [value]="PartnerStatus.ACTIVE">
+          {{ 'partners.active' | translate }}
+        </mat-option>
+        <mat-option [value]="PartnerStatus.INACTIVE">
+          {{ 'partners.inactive' | translate }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="data.mode === 'edit'">
+        Le statut ne peut pas être modifié après création
+      </mat-hint>
+      <mat-error *ngIf="partnerForm.get('status')?.hasError('required')">
+        {{ 'partners.validation.status_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Queue Name (avec autocomplete) -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.queue_name' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="queueName"
+        [matAutocomplete]="queueAuto"
+        placeholder="Rechercher une file...">
+      <mat-autocomplete
+        #queueAuto="matAutocomplete"
+        [displayWith]="displayQueueName"
+        (optionSelected)="onQueueSelected($event)">
+        <mat-option
+          *ngFor="let queue of filteredQueues$ | async"
+          [value]="queue">
+          {{ queue }}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="partnerForm.get('queueName')?.hasError('required')">
+        {{ 'partners.validation.queue_name_required' | translate }}
+      </mat-error>
+      <mat-error *ngIf="partnerForm.get('queueName')?.hasError('queueNameUnique')">
+        {{ 'partners.validation.queue_name_unique' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Hosting Type -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.hosting_type' | translate }}</mat-label>
+      <mat-select formControlName="hostingType">
+        <mat-option
+          *ngFor="let type of allowedHostingTypes"
+          [value]="type">
+          {{ type }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="selectedQueueName && hasQueueRestrictions">
+        Types autorisés pour cette file : {{ allowedHostingTypes.join(', ') }}
+      </mat-hint>
+      <mat-error *ngIf="partnerForm.get('hostingType')?.hasError('required')">
+        {{ 'partners.validation.hosting_type_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Alias -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.alias' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="alias"
+        placeholder="Ex: MAIN_PARTNER">
+      <mat-error *ngIf="partnerForm.get('alias')?.hasError('required')">
+        {{ 'partners.validation.alias_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Application (conditionnel) -->
+    <mat-form-field
+      *ngIf="showApplicationField"
+      appearance="outline">
+      <mat-label>{{ 'partners.application' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="application"
+        placeholder="Ex: PRINT_SERVICE">
+      <mat-hint>Obligatoire pour les types PRINTER et S3</mat-hint>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.description' | translate }}</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        placeholder="Description du partenaire">
+      </textarea>
+      <mat-error *ngIf="partnerForm.get('description')?.hasError('required')">
+        {{ 'partners.validation.description_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="partnerForm.invalid || isSubmitting">
+      <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+      <span *ngIf="!isSubmitting">
+        {{ 'common.save' | translate }}
+      </span>
+    </button>
+  </mat-dialog-actions>
+</form>

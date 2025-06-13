@@ -1,0 +1,116 @@
+/* src/app/shared/components/data-table/data-table.component.scss */
+.table-container {
+  margin: 16px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-field {
+  min-width: 300px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 600px;
+}
+
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+}
+
+.status-chip {
+  font-size: 12px;
+  height: 24px;
+}
+
+.array-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.scope-chip {
+  font-size: 11px;
+  height: 20px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-field {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .header-actions {
+    justify-content: center;
+  }
+}
+
+/* Styles pour la surbrillance */
+:host ::ng-deep .highlight {
+  background-color: #fff59d;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: 500;
+}

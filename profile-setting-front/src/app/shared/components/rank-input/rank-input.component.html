@@ -1,0 +1,16 @@
+<!-- src/app/shared/components/rank-input/rank-input.component.html -->
+<mat-form-field appearance="outline">
+  <mat-label>{{ label }}</mat-label>
+  <input
+    matInput
+    [value]="value"
+    [placeholder]="placeholder"
+    (input)="onInput($event)"
+    (keydown)="onKeyDown($event)"
+    (paste)="onPaste($event)"
+    (blur)="onBlur()"
+    type="text"
+    maxlength="3">
+  <mat-hint>{{ hint }}</mat-hint>
+</mat-form-field>
+

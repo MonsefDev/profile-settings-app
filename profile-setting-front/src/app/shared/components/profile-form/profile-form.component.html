@@ -1,0 +1,85 @@
+<!-- src/app/shared/components/profile-form/profile-form.component.html -->
+<h2 mat-dialog-title>
+  {{ (data.mode === 'create' ? 'profile.create_title' : 'profile.edit_title') | translate }}
+  <button mat-icon-button class="close-button" (click)="onCancel()" aria-label="Fermer">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="form-content">
+    <!-- Code -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.code' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="code"
+        [placeholder]="'Ex: USER01'"
+        [readonly]="data.mode === 'edit' && data.profile?.code === 'ADMIN'">
+      <mat-hint>5-10 caractères, pas d'espaces ni ", #, !, &, _</mat-hint>
+      <mat-error *ngIf="profileForm.get('code')?.hasError('required')">
+        {{ 'profile.validation.code_required' | translate }}
+      </mat-error>
+      <mat-error *ngIf="profileForm.get('code')?.hasError('codeLength')">
+        {{ 'profile.validation.code_length' | translate }}
+      </mat-error>
+      <mat-error *ngIf="profileForm.get('code')?.hasError('codeFormat')">
+        {{ 'profile.validation.code_format' | translate }}
+      </mat-error>
+      <mat-error *ngIf="profileForm.get('code')?.hasError('codeNotOnlyNumbers')">
+        {{ 'profile.validation.code_not_only_numbers' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.description' | translate }}</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        [placeholder]="'Description du profil'">
+      </textarea>
+      <mat-hint>10-30 caractères</mat-hint>
+      <mat-error *ngIf="profileForm.get('description')?.hasError('required')">
+        {{ 'profile.validation.description_required' | translate }}
+      </mat-error>
+      <mat-error *ngIf="profileForm.get('description')?.hasError('descriptionLength')">
+        {{ 'profile.validation.description_length' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Scopes -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.scopes' | translate }}</mat-label>
+      <mat-select formControlName="scopes" multiple>
+        <mat-option *ngFor="let scope of data.availableScopes; trackBy: trackByScope" [value]="scope">
+          {{ scope }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="profileForm.get('scopes')?.hasError('required')">
+        {{ 'profile.validation.scopes_required' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="profileForm.invalid || isSubmitting">
+      <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+      <span *ngIf="!isSubmitting">
+        {{ 'common.save' | translate }}
+      </span>
+    </button>
+  </mat-dialog-actions>
+</form>
