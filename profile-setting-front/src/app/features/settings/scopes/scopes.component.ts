@@ -73,6 +73,10 @@ export class ScopesComponent implements OnInit, OnDestroy {
   }
 
   loadScopes() {
+    if (this.isLoading) {
+      return;
+    }
+
     this.isLoading = true;
     this.cdr.markForCheck();
 
@@ -87,15 +91,18 @@ export class ScopesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.scopes = response.data;
+            this.scopes = [...response.data];
             this.cdr.markForCheck();
           } else {
+            this.scopes = [];
             this.notificationService.showError('common.error');
           }
         },
         error: (error) => {
           console.error('Erreur lors du chargement des scopes:', error);
+          this.scopes = [];
           this.notificationService.showError('common.error');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -248,11 +255,6 @@ export class ScopesComponent implements OnInit, OnDestroy {
           this.notificationService.showError('common.error');
         }
       });
-  }
-
-  onSearch(searchTerm: string) {
-    console.log('Recherche scopes:', searchTerm);
-    this.loadScopes();
   }
 
   trackByScope(index: number, scope: Scope): string {

@@ -6,6 +6,53 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 // src/styles.scss
 
+.scopes-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+  max-width: 500px;
+  padding: 14px 14px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.dialog-actions {
+  padding: 14px 24px !important;
+  gap: 8px !important;
+}
+
+mat-spinner {
+  margin-right: 8px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 1000;
+  color: rgba(0, 0, 0, 0.54); /* même style que Material */
+}
+
 
 // Définir la palette de couleurs
 $custom-primary: mat.define-palette(mat.$indigo-palette);

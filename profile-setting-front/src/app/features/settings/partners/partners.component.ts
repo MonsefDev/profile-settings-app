@@ -24,59 +24,16 @@ import { PartnerFormComponent, PartnerFormData } from '../../../shared/component
     TranslateModule,
     DataTableComponent,
   ],
-  template: `
-    <div class="partners-container">
-      <mat-card class="main-card">
-        <mat-card-header>
-          <mat-card-title>{{ 'partners.title' | translate }}</mat-card-title>
-          <mat-card-subtitle>
-            {{ partners.length }} partner(s) configuré(s)
-            <span *ngIf="hasRank3Scope" class="rank3-indicator">
-              (Utilisateur avec scope rang 3 - Auto ACTIVE)
-            </span>
-          </mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <app-data-table
-            [data]="displayedPartners"
-            [columns]="tableColumns"
-            [actions]="tableActions"
-            [isLoading]="isLoading"
-            [searchable]="true"
-            (onCreate)="openCreateDialog()"
-            (onRefresh)="loadPartners()"
-            (onSearch)="onSearch($event)">
-          </app-data-table>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
-  styles: [`
-    .partners-container {
-      padding: 20px;
-    }
-
-    .main-card {
-      margin-bottom: 20px;
-    }
-
-    .rank3-indicator {
-      color: #4caf50;
-      font-weight: 500;
-    }
-  `]
+  templateUrl: './partners.component.html',
+  styleUrls: ['./partners.component.scss'],
 })
 export class PartnersComponent implements OnInit, OnDestroy {
   partners: Partner[] = [];
-  displayedPartners: Partner[] = [];
   isLoading = false;
   hasRank3Scope = false;
-  currentSearchTerm = '';
 
   private destroy$ = new Subject<void>();
 
-  // Propriétés readonly pour optimiser OnPush
   readonly tableColumns: TableColumn[] = [
     {
       key: 'status',
@@ -142,7 +99,7 @@ export class PartnersComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private userContextService: UserContextService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef // Injection du ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -162,21 +119,18 @@ export class PartnersComponent implements OnInit, OnDestroy {
         const hadRank3 = this.hasRank3Scope;
         this.hasRank3Scope = userContext?.hasRank3Scope || false;
 
-        // Déclencher la détection de changement seulement si la valeur a changé
         if (hadRank3 !== this.hasRank3Scope) {
           this.cdr.markForCheck();
         }
       });
   }
-
   loadPartners() {
-    // Éviter les appels multiples simultanés
     if (this.isLoading) {
       return;
     }
 
     this.isLoading = true;
-    this.cdr.markForCheck(); // Marquer pour mise à jour du loader
+    this.cdr.markForCheck();
 
     this.partnerService.getAll()
       .pipe(
@@ -188,29 +142,32 @@ export class PartnersComponent implements OnInit, OnDestroy {
         }),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.markForCheck(); // Marquer pour désactiver le loader
+          this.cdr.markForCheck();
         })
       )
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.partners = [...response.data]; // Créer une nouvelle référence
-            this.applyCurrentFilter();
+            // ✅ CRITIQUE: Créer une nouvelle référence
+            this.partners = [...response.data];
+
+            // ✅ DEBUG: Ajouter ces logs temporaires
+            console.log('🔄 PartnersComponent - Données chargées:', this.partners.length);
+            console.log('🔄 PartnersComponent - Première donnée:', this.partners[0]);
+
+            this.cdr.detectChanges(); // ✅ detectChanges au lieu de markForCheck
           } else {
             this.partners = [];
-            this.displayedPartners = [];
             if (response.success === false) {
               this.notificationService.showError('Aucune donnée disponible');
             }
           }
-          this.cdr.markForCheck(); // Marquer pour mise à jour des données
         }
       });
   }
-
   openCreateDialog() {
     const dialogRef = this.dialog.open(PartnerFormComponent, {
-      width: '600px',
+      width: '500px',
       disableClose: true,
       data: {
         mode: 'create'
@@ -221,7 +178,6 @@ export class PartnersComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         if (result) {
-          // Auto-définir le statut sur ACTIVE si l'utilisateur a un scope de rang 3
           if (this.hasRank3Scope && !result.status) {
             result.status = PartnerStatus.ACTIVE;
           }
@@ -346,41 +302,6 @@ export class PartnersComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSearch(searchTerm: string) {
-    const newSearchTerm = searchTerm?.trim() || '';
-
-    // Déclencher la détection seulement si le terme a changé
-    if (this.currentSearchTerm !== newSearchTerm) {
-      this.currentSearchTerm = newSearchTerm;
-      this.applyCurrentFilter();
-      this.cdr.markForCheck(); // Marquer pour mise à jour des résultats filtrés
-    }
-  }
-
-  private applyCurrentFilter() {
-    if (!this.currentSearchTerm) {
-      // Créer une nouvelle référence pour déclencher OnPush
-      this.displayedPartners = [...this.partners];
-      return;
-    }
-
-    // Filtre local optimisé
-    const searchTermLower = this.currentSearchTerm.toLowerCase();
-
-    // Créer une nouvelle référence pour déclencher OnPush
-    this.displayedPartners = this.partners.filter(partner => {
-      return (
-        partner.alias?.toLowerCase().includes(searchTermLower) ||
-        partner.queueName?.toLowerCase().includes(searchTermLower) ||
-        partner.application?.toLowerCase().includes(searchTermLower) ||
-        partner.description?.toLowerCase().includes(searchTermLower) ||
-        partner.hostingType?.toLowerCase().includes(searchTermLower) ||
-        partner.status?.toLowerCase().includes(searchTermLower)
-      );
-    });
-  }
-
-  // Méthodes de tracking pour optimiser *ngFor (si utilisé dans le template)
   trackByPartnerId(index: number, partner: Partner): string {
     return partner.id;
   }

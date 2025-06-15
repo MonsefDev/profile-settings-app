@@ -1,17 +1,18 @@
 // src/app/shared/components/data-table/data-table.component.ts
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableColumn, TableAction } from '../../../core/models/table.model';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-data-table',
@@ -30,36 +31,51 @@ import { TableColumn, TableAction } from '../../../core/models/table.model';
     MatSortModule,
     MatTooltipModule,
     TranslateModule,
-    MatTableModule
+    MatTableModule,
+    MatPaginatorModule
   ]
 })
-export class DataTableComponent implements OnInit, OnChanges {
+export class DataTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() actions: TableAction[] = [];
   @Input() isLoading = false;
   @Input() searchable = true;
+  @Input() pageSize = 10;
+  @Input() pageSizeOptions = [5, 10, 25, 50];
 
   @Output() onCreate = new EventEmitter<void>();
   @Output() onRefresh = new EventEmitter<void>();
-  @Output() onSearch = new EventEmitter<string>();
+
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns: string[] = [];
   searchTerm = '';
+  dataSource = new MatTableDataSource<any>([]);
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.updateDisplayedColumns();
+    this.updateDataSource();
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.cdr.detectChanges();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Déclencher la détection seulement si les données importantes ont changé
     if (changes['columns']) {
       this.updateDisplayedColumns();
     }
 
-    // Marquer pour vérification seulement si nécessaire
+    if (changes['data']) {
+      this.updateDataSource();
+    }
+
     if (changes['data'] || changes['isLoading'] || changes['columns'] || changes['actions']) {
       this.cdr.markForCheck();
     }
@@ -72,20 +88,91 @@ export class DataTableComponent implements OnInit, OnChanges {
     ];
   }
 
+  private updateDataSource() {
+    // ✅ IMPORTANT: Créer une nouvelle référence ET forcer la détection
+    const newData = this.data || [];
+    this.dataSource.data = [...newData];
+
+    // Configuration du filtre personnalisé pour la recherche
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      if (!filter) return true;
+
+      const searchTermLower = filter.toLowerCase();
+      return this.columns.some(column => {
+        const value = data[column.key];
+        if (value == null) return false;
+
+        // Gestion spéciale pour les arrays (scopes, etc.)
+        if (Array.isArray(value)) {
+          return value.some(item =>
+            item.toString().toLowerCase().includes(searchTermLower)
+          );
+        }
+
+        // Gestion pour tous les autres types
+        return value.toString().toLowerCase().includes(searchTermLower);
+      });
+    };
+
+    // Configuration du tri personnalisé
+    this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      const value = data[sortHeaderId];
+
+      // Gestion spéciale pour les dates
+      const column = this.columns.find(col => col.key === sortHeaderId);
+      if (column?.type === 'date' && value) {
+        return new Date(value).getTime();
+      }
+
+      // Gestion pour les nombres
+      if (column?.type === 'number' && value != null) {
+        return Number(value);
+      }
+
+      // Gestion pour les booléens
+      if (column?.type === 'boolean') {
+        return value ? 1 : 0;
+      }
+
+      // Gestion pour les arrays (trier par le premier élément)
+      if (Array.isArray(value)) {
+        return value.length > 0 ? value[0].toString().toLowerCase() : '';
+      }
+
+      // Gestion pour les strings
+      if (typeof value === 'string') {
+        return value.toLowerCase();
+      }
+
+      return value || '';
+    };
+
+    // Réappliquer le filtre existant après mise à jour des données
+    if (this.searchTerm) {
+      this.dataSource.filter = this.searchTerm;
+    }
+
+    // ✅ FORCER la mise à jour de la table
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+
+    // ✅ FORCER la détection des changements
+    this.cdr.detectChanges();
+  }
+
   onSearchChange(event: any) {
     const newSearchTerm = event.target.value || '';
 
-    // Éviter les émissions inutiles
     if (this.searchTerm !== newSearchTerm) {
       this.searchTerm = newSearchTerm;
-      this.onSearch.emit(this.searchTerm);
+      this.dataSource.filter = newSearchTerm;
       this.cdr.markForCheck();
     }
   }
 
   highlightSearchTerm(text: any, searchTerm: string): string {
     if (!text || !searchTerm) return text;
-
     const textStr = text.toString();
     const regex = new RegExp(`(${this.escapeRegExp(searchTerm)})`, 'gi');
     return textStr.replace(regex, '<span class="highlight">$1</span>');
@@ -101,7 +188,6 @@ export class DataTableComponent implements OnInit, OnChanges {
     );
   }
 
-  // Fonctions de tracking optimisées pour OnPush
   trackByColumn = (index: number, column: TableColumn): string => {
     return column.key;
   }
@@ -118,8 +204,11 @@ export class DataTableComponent implements OnInit, OnChanges {
     return typeof item === 'object' ? (item.id || item.name || JSON.stringify(item)) : item;
   }
 
-  // Getter pour les données à afficher (optimisé pour OnPush)
-  get displayedData(): any[] {
-    return this.data || [];
+  get filteredDataCount(): number {
+    return this.dataSource.filteredData.length;
+  }
+
+  get totalDataCount(): number {
+    return this.data.length;
   }
 }

@@ -1,6 +1,8 @@
-<p>partner-form works!</p>
 <h2 mat-dialog-title>
   {{ (data.mode === 'create' ? 'partners.create_title' : 'partners.edit_title') | translate }}
+  <button mat-icon-button class="close-button" (click)="onCancel()" aria-label="Fermer">
+    <mat-icon>close</mat-icon>
+  </button>
 </h2>
 
 <form [formGroup]="partnerForm" (ngSubmit)="onSubmit()">
@@ -109,7 +111,7 @@
     </mat-form-field>
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
+  <mat-dialog-actions align="end" class="dialog-actions">
     <button
       mat-button
       type="button"

@@ -21,6 +21,7 @@ import {
 } from  '../../../core/models/partner.model';
 import { UserContextService } from '../../../core/services/user-context.service';
 import { PartnerService } from '../../../core/services/partner.service';
+import { MatIcon } from '@angular/material/icon';
 
 export interface PartnerFormData {
   partner?: Partner;
@@ -40,7 +41,8 @@ export interface PartnerFormData {
     MatButtonModule,
     MatProgressSpinnerModule,
     MatAutocompleteModule,
-    TranslateModule
+    TranslateModule,
+    MatIcon
   ],
  templateUrl: './partner-form.component.html',
  styleUrls: ['./partner-form.component.scss'],

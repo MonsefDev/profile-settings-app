@@ -1,4 +1,4 @@
-<p>partners works!</p>
+<!-- src/app/features/settings/partners/partners.component.html -->
 <div class="partners-container">
   <mat-card class="main-card">
     <mat-card-header>
@@ -13,14 +13,13 @@
 
     <mat-card-content>
       <app-data-table
-        [data]="displayedPartners"
+        [data]="partners"
         [columns]="tableColumns"
         [actions]="tableActions"
         [isLoading]="isLoading"
-        [searchable]="false"
+        [searchable]="true"
         (onCreate)="openCreateDialog()"
-        (onRefresh)="loadPartners()"
-        (onSearch)="onSearch($event)">
+        (onRefresh)="loadPartners()">
       </app-data-table>
     </mat-card-content>
   </mat-card>

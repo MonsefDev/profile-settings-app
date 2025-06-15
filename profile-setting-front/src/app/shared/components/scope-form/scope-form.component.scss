@@ -1,31 +1,31 @@
-/* src/app/shared/components/scope-form/scope-form.component.scss */
-.form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 450px;
-  max-width: 500px;
-  padding: 20px 0;
-}
+// /* src/app/shared/components/scope-form/scope-form.component.scss */
+// .form-content {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 16px;
+//   min-width: 450px;
+//   max-width: 500px;
+//   padding: 20px 0;
+// }
 
-mat-form-field, app-rank-input {
-  width: 100%;
-}
+// mat-form-field, app-rank-input {
+//   width: 100%;
+// }
 
-.error-container {
-  margin-top: -16px;
-  margin-bottom: 8px;
-}
+// .error-container {
+//   margin-top: -16px;
+//   margin-bottom: 8px;
+// }
 
-mat-dialog-actions {
-  padding: 16px 0;
-  gap: 8px;
-}
+// mat-dialog-actions {
+//   padding: 16px 0;
+//   gap: 8px;
+// }
 
-mat-spinner {
-  margin-right: 8px;
-}
+// mat-spinner {
+//   margin-right: 8px;
+// }
 
-textarea {
-  resize: vertical;
-}
+// textarea {
+//   resize: vertical;
+// }

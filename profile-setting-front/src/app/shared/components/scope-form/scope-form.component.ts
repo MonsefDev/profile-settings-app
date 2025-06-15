@@ -11,6 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RankInputComponent } from '../rank-input/rank-input.component';
 import { Scope, CreateScopeRequest, UpdateScopeRequest } from '../../../core/models/scope.model';
 import { ScopeValidators } from '../../validators/scope.validators';
+import { MatIcon } from '@angular/material/icon';
 
 export interface ScopeFormData {
   scope?: Scope;
@@ -33,7 +34,8 @@ export interface ScopeFormData {
     MatButtonModule,
     MatProgressSpinnerModule,
     TranslateModule,
-    RankInputComponent
+    RankInputComponent,
+    MatIcon
   ]
 })
 export class ScopeFormComponent implements OnInit {

@@ -77,6 +77,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   loadProfiles() {
+    if (this.isLoading) return;
+
     this.isLoading = true;
     this.cdr.markForCheck();
 
@@ -90,16 +92,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          if (response.success) {
-            this.profiles = response.data;
-            this.cdr.markForCheck();
+          if (response.success && response.data) {
+            // ✅ CRITIQUE: Créer une nouvelle référence
+            this.profiles = [...response.data];
+
+            // ✅ DEBUG: Ajouter ces logs temporaires
+            console.log('🔄 ProfileComponent - Données chargées:', this.profiles.length);
+            console.log('🔄 ProfileComponent - Première donnée:', this.profiles[0]);
+
+            this.cdr.detectChanges(); // ✅ detectChanges au lieu de markForCheck
           } else {
+            this.profiles = [];
             this.notificationService.showError('common.error');
           }
         },
         error: (error) => {
           console.error('Erreur lors du chargement des profils:', error);
+          this.profiles = [];
           this.notificationService.showError('common.error');
+          this.cdr.detectChanges();
         }
       });
   }
@@ -264,11 +275,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.notificationService.showError('common.error');
         }
       });
-  }
-
-  onSearch(searchTerm: string) {
-    console.log('Recherche:', searchTerm);
-    this.loadProfiles();
   }
 
   trackByProfile(index: number, profile: Profile): string {

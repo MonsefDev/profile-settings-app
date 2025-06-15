@@ -1,3 +1,4 @@
+<!-- src/app/features/settings/scopes/scopes.component.html -->
 <div class="scopes-container">
   <mat-card class="main-card">
     <mat-card-header>
@@ -15,8 +16,7 @@
         [isLoading]="isLoading"
         [searchable]="true"
         (onCreate)="openCreateDialog()"
-        (onRefresh)="loadScopes()"
-        (onSearch)="onSearch($event)">
+        (onRefresh)="loadScopes()">
       </app-data-table>
     </mat-card-content>
   </mat-card>
